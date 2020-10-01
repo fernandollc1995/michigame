@@ -49,18 +49,25 @@ function calculateWinner(squares) {
 
 function Board() {
   const [squares, setSquares] = useState(Array(9).fill(null));
-  const [xisNext, setXisNext] = useState(true);
+  const [xisNext, setXisNext] = useState();
   const [status, setStatus] = useState("Jugador actual: X");
 
   useEffect(() => {
     db.collection('michi').doc("xLZtrCPDLHpbAAWp8okN").onSnapshot( (doc) => {
       setSquares(doc.data().arreglomichi);
+      setXisNext(doc.data().xIsNext);
     });
   }, []);
 
   const updateSquaresOnFirebase =(squares) =>{
     db.collection("michi").doc("xLZtrCPDLHpbAAWp8okN").set({
       arreglomichi: squares
+    },{merge:true})
+  }
+
+  const updateXIsNextOnFirebase =(xIsNext) =>{
+    db.collection("michi").doc("xLZtrCPDLHpbAAWp8okN").set({
+      xIsNext: xIsNext
     },{merge:true})
   }
 
@@ -75,7 +82,7 @@ function Board() {
       return;
     }
     setStatus("Le toca a: " + tmpState);
-    setXisNext(!xisNext);
+    updateXIsNextOnFirebase(!xisNext);
     updateSquaresOnFirebase(tmpSquares);
   }
 
