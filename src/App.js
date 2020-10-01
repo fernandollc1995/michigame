@@ -49,15 +49,22 @@ function calculateWinner(squares) {
 
 function Board() {
   const [squares, setSquares] = useState(Array(9).fill(null));
-  const [xisNext, setXisNext] = useState();
-  const [status, setStatus] = useState("Jugador actual: X");
+  const [isNext, setIsNext] = useState();
+  const [status, setStatus] = useState();
 
   useEffect(() => {
     db.collection('michi').doc("xLZtrCPDLHpbAAWp8okN").onSnapshot( (doc) => {
       setSquares(doc.data().arreglomichi);
-      setXisNext(doc.data().xIsNext);
+      setIsNext(doc.data().xIsNext);
+      const tmpState = doc.data().xIsNext ? 'X' : 'O';
+      setStatus("Le toca a: " + tmpState);
+      if (calculateWinner(doc.data().arreglomichi)) {
+        // updateSquaresOnFirebase(squares);
+        setStatus("El ganador es: " + calculateWinner(doc.data().arreglomichi));
+      }
     });
   }, []);
+
 
   const updateSquaresOnFirebase =(squares) =>{
     db.collection("michi").doc("xLZtrCPDLHpbAAWp8okN").set({
@@ -73,16 +80,9 @@ function Board() {
 
   const handleClick = (i) => {
     const tmpSquares = squares.slice();
-    const tmpState = !xisNext ? 'X' : 'O';
     if (tmpSquares[i] || calculateWinner(tmpSquares)) return;
-    tmpSquares[i] = xisNext ? 'X' : 'O';
-    if (calculateWinner(tmpSquares)) {
-      updateSquaresOnFirebase(tmpSquares);
-      setStatus("El ganador es: " + calculateWinner(tmpSquares));
-      return;
-    }
-    setStatus("Le toca a: " + tmpState);
-    updateXIsNextOnFirebase(!xisNext);
+    tmpSquares[i] = isNext ? 'X' : 'O';
+    updateXIsNextOnFirebase(!isNext);
     updateSquaresOnFirebase(tmpSquares);
   }
 
