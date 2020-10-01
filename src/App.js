@@ -1,31 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import db from "./firebase";
-function Title() {
-  const [titulo, setTitulo] = useState([]);
-  useEffect(() => {
-    // console.log(db.collection('Titulo').onSnapshot);
-    db.collection('michi').doc("xLZtrCPDLHpbAAWp8okN").onSnapshot(snapshot => (
-      setTitulo(snapshot.docs.map(doc =>
-        ({
-          id: doc.id,
-          data: doc.data()
-        })
-      ))
-    ));
-    console.log(titulo);
-  }, []);
-
-  return (
-    <header>
-      <h1>Juego de Michi</h1>
-      {/* <h2>{titulo}</h2> */}
-      {/* {titulo.map( titles => (
-        <h2 key={titles.id}>{titles.data.tituloPrincipal}</h2>
-      ))} */}
-    </header>
-  )
-}
 
 function calculateWinner(squares) {
   const secuence_ganadora = [
@@ -112,7 +87,7 @@ function Board() {
         {renderSquare(7)}
         {renderSquare(8)}
       </div>
-      {status}
+      <p className="board-status">{status}</p>
 
     </div>
   )
@@ -153,9 +128,15 @@ const clearData = ()=>{
 function App() {
   return (
     <div className="App">
-      {/* <Title /> */}
+      <h1 className="App-title">Michi Game :D</h1>
       <Game />
-      <button onClick={clearData}>Limpiar datos</button>
+      <button href="#" className="button button-refresh" onClick={clearData}>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <p>Limpiar datos</p>
+      </button>
     </div>
   );
 }
